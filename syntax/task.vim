@@ -1,4 +1,3 @@
-
 if exists("b:current_syntax")
   finish
 endif
@@ -6,9 +5,6 @@ endif
 if !exists("main_syntax")
   let main_syntax = 'task'
 endif
-
-"au BufRead *.task set filetype=task
-"au BufRead *.task nmap <leader>d $^i+<esc>
 
 syn clear
 syn region pythonFunction start=/[^\s]/ end=/$/

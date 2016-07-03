@@ -1,7 +1,6 @@
 setlocal indentexpr=TaskIndentGet(v:lnum)
 setlocal indentkeys=o,O,*<Return>,<>>,{,},!^F
 
-
 fun! TaskIndentGet(lnum)
     " Find a non-empty line above the current line.
     let lnum = prevnonblank(a:lnum - 1)
