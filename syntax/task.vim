@@ -13,4 +13,6 @@ syn region Normal start=/ \{8\}/ end=/$/
 syn region Comment start=/\s*+/ end=/$/
 syn region Error start=/\s*!/ end=/$/
 syn region Constant start=/\s*0/ end=/$/
-hi Comment cterm=italic gui=italic
+syn region WildMenu start=/\s*0/ end=/$/
+
+
