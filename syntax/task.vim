@@ -8,8 +8,8 @@ endif
 
 syn clear
 syn region pythonFunction start=/[^\s]/ end=/$/
-syn region String start=/\s\{4}/ end=/$/
-syn region Normal start=/ \{8\}/ end=/$/
+syn region String start=/\s\{2}/ end=/$/
+syn region Normal start=/ \{4\}/ end=/$/
 syn region Comment start=/\s*+/ end=/$/
 syn region Error start=/\s*!/ end=/$/
 syn region Constant start=/\s*0/ end=/$/
