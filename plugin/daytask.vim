@@ -9,6 +9,8 @@ au BufRead *.dt set norelativenumber
 au BufRead *.dt nmap <leader>j :call DtMoveDown()<CR>
 au BufRead *.dt nmap <leader>k :call DtMoveUp()<CR>
 au BufRead *.dt nmap <leader>i :call DtInWork()<CR>
+"nmap <leader>d $^i+<esc>
+au BufRead *.dt nmap <leader>d :call DtDone()<esc>
 au BufRead *.dt imap [ []<LEFT>
 
 fun! DayTaskConstruct()
@@ -21,11 +23,26 @@ fun! DayTaskConstruct()
 endfun
 
 fun! NewDayTaskConstruct()
-    sp suspended.dt
+    sp done.dt
     vsp inwork.dt
     vsp projects.dt
     drop day.dt
 endfun
+
+fun! DtDone()
+    let lnum = line('.')
+    normal $^i+
+    let str = getline(lnum)
+    if expand('%:t') == 'inwork.dt'
+        drop done.dt
+        call append(1, str)
+        drop inwork.dt
+        normal dd
+        normal dd
+    else
+        echo 'is not inwork'
+    endif
+endf
 
 fun! DtMoveUp()
     let lnum = line('.')
