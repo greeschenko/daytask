@@ -8,6 +8,8 @@ au BufRead *.dt set norelativenumber
 "au BufRead *.dt nmap <leader>V :call DtGetObject()<CR>
 au BufRead *.dt nmap <leader>j :call DtMoveDown()<CR>
 au BufRead *.dt nmap <leader>k :call DtMoveUp()<CR>
+au BufRead *.dt nmap <leader>i :call DtInWork()<CR>
+au BufRead *.dt imap [ []<LEFT>
 
 fun! DayTaskConstruct()
     sp someday.dt
@@ -20,7 +22,7 @@ endfun
 
 fun! NewDayTaskConstruct()
     sp suspended.dt
-    vsp inwokr.dt
+    vsp inwork.dt
     vsp projects.dt
     drop day.dt
 endfun
@@ -144,6 +146,35 @@ fun! DtGetObject(lnum)
     return [lnum,lnum+a:n]
 endf
 
+fun! DtInWork()
+    let lnum = line('.')
+    let str = DtGenLink(lnum)
+    let slvl = DtSelfFoldLvl(lnum)
+    let list = DtGetObject(lnum)
+    if slvl != 0
+        if list[1] - list[0] == 0
+            if getline(lnum)[(slvl*2):(slvl*2)] != '+'
+                if getline(lnum)[(slvl*2):(slvl*2+2)] != '[w]'
+                    drop inwork.dt
+                    call append(0, ' ')
+                    call append(0, str)
+                    drop projects.dt
+                    normal ^i[w
+                    normal ^
+                else
+                    echo "imposible obj allredy inwork"
+                endif
+            else
+                echo "imposible obj is done"
+            endif
+        else
+            echo "imposible obj have childrens"
+        endif
+    else
+        echo "imposible move to inwork root obj"
+    endif
+endf
+
 fun! DtGenLink(lnum)
     let lnum = a:lnum
     let list = []
@@ -155,5 +186,5 @@ fun! DtGenLink(lnum)
             break
         endif
     endfor
-    echo join(reverse(list), '>')
+    return join(reverse(list), '>>')
 endf
