@@ -11,6 +11,7 @@ au BufRead *.dt nmap <leader>k :call DtMoveUp()<CR>
 au BufRead *.dt nmap <leader>i :call DtInWork()<CR>
 "nmap <leader>d $^i+<esc>
 au BufRead *.dt nmap <leader>d :call DtDone()<esc>
+au BufRead *.dt nmap <leader>f :call DtGoToTask()<esc>
 au BufRead *.dt imap [ []<LEFT>
 
 fun! DayTaskConstruct()
@@ -31,14 +32,43 @@ endfun
 
 fun! DtDone()
     let lnum = line('.')
-    normal $^i+
     let str = getline(lnum)
     if expand('%:t') == 'inwork.dt'
+        call DtGoToTask()
+        normal 0
+        normal f[
+        normal 3x
+        normal $^i+
+        write
         drop done.dt
         call append(1, str)
+        normal 2gg
+        normal $^i+
+        write
         drop inwork.dt
         normal dd
         normal dd
+        write
+    else
+        normal $^i+
+        echo 'is not inwork'
+    endif
+endf
+
+fun! DtGoToTask()
+    let lnum = line('.')
+    let str = getline(lnum)
+    let list = split(str,'>>')
+    if expand('%:t') == 'inwork.dt'
+        drop projects.dt
+        normal gg
+        echo list
+        for i in list
+            let search = substitute(i,'^\s*','','g')
+            execute "normal /".search."/e\<CR>"
+        endfor
+        normal zO
+        normal zz
     else
         echo 'is not inwork'
     endif
@@ -175,9 +205,11 @@ fun! DtInWork()
                     drop inwork.dt
                     call append(0, ' ')
                     call append(0, str)
+                    write
                     drop projects.dt
                     normal ^i[w
                     normal ^
+                    write
                 else
                     echo "imposible obj allredy inwork"
                 endif
