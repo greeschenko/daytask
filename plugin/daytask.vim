@@ -34,6 +34,8 @@ fun! DtDone()
     let lnum = line('.')
     let str = getline(lnum)
     if expand('%:t') == 'inwork.dt'
+        let wh = input('Enter spend time: ')
+        let str = str ." [".wh."]"
         call DtGoToTask()
         normal 0
         normal f[
