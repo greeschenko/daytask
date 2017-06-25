@@ -14,6 +14,9 @@ au BufRead *.dt nmap <leader>d :call DtDone()<esc>
 au BufRead *.dt nmap <leader>f :call DtGoToTask()<esc>
 au BufRead *.dt imap [ []<LEFT>
 
+au! BufRead projects.dt nmap <leader>o :call DtAddInfo()<CR>
+au! CursorMoved projects.dt nested call DtCheckInfo()
+
 fun! DayTaskConstruct()
     sp someday.dt
     vsp tommorow.dt
@@ -238,4 +241,29 @@ fun! DtGenLink(lnum)
         endif
     endfor
     return join(reverse(list), '>>')
+endf
+
+fun! DtAddInfo()
+    let l:lnum = line('.')
+    let l:line = getline(lnum)
+    let l:name = DtGenLink(l:lnum)
+    let l:name = system("echo '".l:name."' | md5sum")
+    let l:name = "info/".l:name[0:31].".dt"
+    wincmd j
+    execute "e ".l:name
+endf
+
+fun! DtCheckInfo()
+    let l:lnum = line('.')
+    let l:line = getline(lnum)
+    let l:name = DtGenLink(l:lnum)
+    let l:name = system("echo '".l:name."' | md5sum")
+    let l:name = "info/".l:name[0:31].".dt"
+    if len(l:line) != 0 && filereadable(l:name)
+        wincmd j
+        execute "e ".l:name
+        drop projects.dt
+    else
+        echo "no info"
+    endif
 endf
