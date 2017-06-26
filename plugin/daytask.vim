@@ -232,10 +232,16 @@ endf
 fun! DtGenLink(lnum)
     let lnum = a:lnum
     let list = []
-    call add(list,getline(lnum))
+    let line = getline(lnum)
+    let line = substitute(line,'\[w]','','g')
+    call add(list,line)
     for i in range(1,500)
         let lnum = DtParent(lnum)
-        call add(list,getline(lnum))
+        let line = getline(lnum)
+        let line = substitute(line,'\[w]','','g')
+        if line != ''
+            call add(list, line)
+        endif
         if DtSelfFoldLvl(lnum) == 0
             break
         endif
