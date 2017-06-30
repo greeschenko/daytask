@@ -15,7 +15,10 @@ au BufRead *.dt nmap <leader>f :call DtGoToTask()<esc>
 au BufRead *.dt imap [ []<LEFT>
 
 au! BufRead projects.dt nmap <leader>o :call DtAddInfo()<CR>
-au! CursorMoved projects.dt nested call DtCheckInfo()
+au! CursorMoved projects.dt nested call DtCheckInfo(0)
+au! CursorMoved inwork.dt nested call DtCheckInfo(1)
+
+let g:dt_cur_file = 'info/null'
 
 fun! DayTaskConstruct()
     sp someday.dt
@@ -31,6 +34,7 @@ fun! NewDayTaskConstruct()
     vsp inwork.dt
     vsp projects.dt
     drop day.dt
+    10winc -
 endfun
 
 fun! DtDone()
@@ -259,17 +263,37 @@ fun! DtAddInfo()
     execute "e ".l:name
 endf
 
-fun! DtCheckInfo()
+fun! DtCheckInfo(dirrect)
     let l:lnum = line('.')
     let l:line = getline(lnum)
-    let l:name = DtGenLink(l:lnum)
+    if a:dirrect
+        let l:name = l:line
+    else
+        let l:name = DtGenLink(l:lnum)
+    endif
     let l:name = system("echo '".l:name."' | md5sum")
     let l:name = "info/".l:name[0:31].".dt"
     if len(l:line) != 0 && filereadable(l:name)
-        wincmd j
-        execute "e ".l:name
-        drop projects.dt
+        if g:dt_cur_file != l:name
+            wincmd j
+            execute "e ".l:name
+            if a:dirrect
+                drop inwork.dt
+            else
+                drop projects.dt
+            endif
+            let g:dt_cur_file = l:name
+        endif
     else
-        echo "no info"
+        if g:dt_cur_file != 'info/null'
+            wincmd j
+            execute "e info/null"
+            if a:dirrect
+                drop inwork.dt
+            else
+                drop projects.dt
+            endif
+            let g:dt_cur_file = 'info/null'
+        endif
     endif
 endf
