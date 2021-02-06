@@ -15,8 +15,8 @@ au BufRead *.dt nmap <leader>f :call DtGoToTask()<esc>
 au BufRead *.dt imap [ []<LEFT>
 
 au! BufRead projects.dt nmap <leader>o :call DtAddInfo()<CR>
-au! CursorMoved projects.dt nested call DtCheckInfo(0)
-au! CursorMoved inwork.dt nested call DtCheckInfo(1)
+au! CursorHold projects.dt nested call DtCheckInfo(0)
+au! CursorHold inwork.dt nested call DtCheckInfo(1)
 
 let g:dt_cur_file = 'info/null'
 
@@ -30,11 +30,13 @@ fun! DayTaskConstruct()
 endfun
 
 fun! NewDayTaskConstruct()
+    vsp day.dt
     sp done.dt
     vsp inwork.dt
     vsp projects.dt
     drop day.dt
-    10winc -
+    vsp day.dt
+    5winc -
 endfun
 
 fun! DtDone()
@@ -173,33 +175,33 @@ fun! DtParent(lnum)
 endf
 
 fun! DtSelfFoldLvl(lnum)
-    let a:c = 0
-    let a:oldi = 0
+    let count = 0
+    let oldi = 0
     for i in range(1,30,2)
-        if getline(a:lnum)[a:oldi:i] == "  "
-            let a:c += 1
-            let a:oldi = i + 1
+        if getline(a:lnum)[oldi:i] == "  "
+            let count += 1
+            let oldi = i + 1
         else
             break
         endif
     endfor
-    return a:c
+    return count
 endf
 
 fun! DtGetObject(lnum)
     let lnum = a:lnum
-    let a:n = 0
-    let a:mainlvl = DtSelfFoldLvl(lnum)
+    let n = 0
+    let mainlvl = DtSelfFoldLvl(lnum)
     for i in range(1,100)
-        let a:curlvl = DtSelfFoldLvl(lnum+i)
-        if a:curlvl > a:mainlvl
-            let a:n += 1
+        let curlvl = DtSelfFoldLvl(lnum+i)
+        if curlvl > mainlvl
+            let n += 1
         else
             break
         endif
     endfor
 
-    return [lnum,lnum+a:n]
+    return [lnum,lnum+n]
 endf
 
 fun! DtInWork()
